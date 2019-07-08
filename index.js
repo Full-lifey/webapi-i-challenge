@@ -48,20 +48,41 @@ server.get('/users/:id', (req, res) => {
 
 server.post('/users', (req, res) => {
   const userInfo = req.body;
-  console.log('user input info', userInfo);
   if (userInfo.name && userInfo.bio) {
     users
       .insert(userInfo)
       .then(user => {
-        console.log('user object inside then', user);
         res.status(201).json(user);
       })
-      .catch();
+      .catch(err => {
+        res.status(500).json({
+          error: 'There was an error while saving the user to the database'
+        });
+      });
   } else {
     res
       .status(400)
       .json({ errorMessage: 'Please provide name and bio for the user.' });
   }
+});
+
+server.delete('/users/:id', (req, res) => {
+  const { id } = req.params;
+
+  users
+    .remove(id)
+    .then(deleted => {
+      if (deleted) {
+        res.status(204).end();
+      } else {
+        res
+          .status(404)
+          .json({ message: 'The user with the specified ID does not exist.' });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ error: 'The user could not be removed' });
+    });
 });
 
 const port = 5000;
