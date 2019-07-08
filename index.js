@@ -1,11 +1,13 @@
 // implement your API here
 const express = require('express');
+const cors = require('cors');
 
 const users = require('./data/db.js');
 
 const server = express();
 
 server.use(express.json());
+server.use(cors());
 
 server.get('/', (req, res) => {
   res.send('Get is working!!!');
@@ -88,8 +90,6 @@ server.delete('/users/:id', (req, res) => {
 server.put('/users/:id', (req, res) => {
   const { id } = req.params;
   const changes = req.body;
-  console.log('id', id);
-  console.log('updated object', changes);
 
   if (changes.name && changes.bio) {
     users
