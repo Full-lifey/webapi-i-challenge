@@ -5,6 +5,8 @@ const users = require('./data/db.js');
 
 const server = express();
 
+server.use(express.json());
+
 server.get('/', (req, res) => {
   res.send('Get is working!!!');
 });
@@ -24,7 +26,7 @@ server.get('/users', (req, res) => {
 
 server.get('/users/:id', (req, res) => {
   const { id } = req.params;
-  console.log(id);
+
   users
     .findById(id)
     .then(user => {
@@ -46,11 +48,20 @@ server.get('/users/:id', (req, res) => {
 
 server.post('/users', (req, res) => {
   const userInfo = req.body;
-
-  users
-    .insert(userInfo)
-    .then(user => {})
-    .catch();
+  console.log('user input info', userInfo);
+  if (userInfo.name && userInfo.bio) {
+    users
+      .insert(userInfo)
+      .then(user => {
+        console.log('user object inside then', user);
+        res.status(201).json(user);
+      })
+      .catch();
+  } else {
+    res
+      .status(400)
+      .json({ errorMessage: 'Please provide name and bio for the user.' });
+  }
 });
 
 const port = 5000;
